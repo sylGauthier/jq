@@ -8,13 +8,15 @@ if [ ! -f "$HOME/.jq/.id" ] ; then
     touch "$HOME/.jq/.id"
 fi
 
+ED="$(test -n "$EDITOR" && echo "$EDITOR" || echo "/usr/bin/vi")"
+KEYID="$(cat "$HOME/.jq/.id")"
+
 function print_help ()
 {
     printf "Usage: $0 [command]
                 ls: displays list of entries.
                 add: add a new entry at the current date and time.
-                read <date>: read the entries at the specified date.
-            "
+                read <date>: read the entries at the specified date.\n"
 }
 
 function add_entry ()
@@ -25,8 +27,6 @@ function add_entry ()
     NAME="$(date +%H:%M:%S)"
     DIR="$HOME/.jq/$CURY/$CURM/$CURD/"
     TMP="$(mktemp -d)/$NAME.jq"
-    ED="$(test -n "$EDITOR" && echo "$EDITOR" || echo "/usr/bin/vi")"
-    KEYID="$(cat "$HOME/.jq/.id")"
 
     test -d "$DIR" || mkdir -p "$DIR"
     $ED "$TMP"
@@ -43,6 +43,20 @@ function add_entry ()
     printf "Created new entry : $CURY/$CURM/$CURD/$NAME\n"
 }
 
+function read_entry ()
+{
+    for i in $(find "$HOME/.jq/$1" -name *:*:* | sort) ; do
+        NAME=${i#$HOME/.jq/}
+        DATE=$(dirname "$NAME")
+        TIME=$(basename "$NAME")
+        TIME=${TIME%.gpg}
+
+        printf "                          ~~ $DATE $TIME ~~\n"
+        gpg -d "$i" 2>/dev/null
+        printf "\n                                    ***\n\n"
+    done
+}
+
 function init ()
 {
     printf "Please give the gpg key identifier to associate with this journal. If none given, the journal will not be encrypted\n"
@@ -57,4 +71,8 @@ elif [ "$1" = "add" ] ; then
     add_entry
 elif [ "$1" = "init" ] ; then
     init
+elif [ "$1" = "read" ] ; then
+    read_entry "$2" | less
+else
+    print_help
 fi
