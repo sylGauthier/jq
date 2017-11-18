@@ -1,0 +1,15 @@
+jq : A simple script to write a journal in a very UNIX way. The journal is
+stored in a file hierarchy in the following way:
+
+.jq :
+    |-journal1
+    |-journal2
+        |-2015
+        |-2016
+            |-01
+            |-02
+                |-12
+                |-18
+                    |-13:02.txt
+
+Entries are encrypted using GPG.
