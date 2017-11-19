@@ -47,11 +47,12 @@ function read_entry ()
 {
     for i in $(find "$HOME/.jq/$1" -name *:*:* | sort) ; do
         NAME=${i#$HOME/.jq/}
-        DATE=$(dirname "$NAME")
-        TIME=$(basename "$NAME")
+        DATE="$(dirname "$NAME")"
+        TIME="$(basename "$NAME")"
         TIME=${TIME%.gpg}
+        DATE="$(date -d "$DATE $TIME" -R)"
 
-        printf "                          ~~ $DATE $TIME ~~\n"
+        printf "                     ~~ $DATE ~~\n"
         gpg -d "$i" 2>/dev/null
         printf "\n                                    ***\n\n"
     done
