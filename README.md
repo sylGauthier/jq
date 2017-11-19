@@ -8,7 +8,7 @@ folder structure to store the entries.
 **jq init** : set the gpg key-id for encrypting. Leave blank if you don't want the
 journal to be encrypted.
 
-**jq add* : open the text editor in $EDITOR variable to write an entry. Then
+**jq add** : open the text editor in $EDITOR variable to write an entry. Then
 encrypt the file (if need be) and add it to the journal.
 
 **jq add *filename* \[*name*\]** : add a file to the journal. Will be encrypted if

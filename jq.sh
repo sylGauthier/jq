@@ -32,7 +32,7 @@ function add_entry ()
     $ED "$TMP"
 
     if [ -n "$KEYID" ] ; then
-        gpg -r "$KEYID" -o "$DIR/$NAME.gpg" -e "$TMP"
+        gpg -r "$KEYID" -o "$DIR/$NAME.gpg" -e "$TMP" 2>/dev/null
         shred -u "$TMP"
     else
         printf "/!\\ Unencrypted /!\\ \n"
@@ -51,6 +51,8 @@ function add_file ()
     NAME="$(date +%H:%M:%S)"
     DIR="$HOME/.jq/$CURY/$CURM/$CURD/"
     OUTNAME="$(test -n "$2" && echo "$2" || echo "$1")"
+
+    test -d "$DIR" || mkdir -p "$DIR"
 
     if [ -n "$KEYID" ] ; then
         gpg -r "$KEYID" -o "$DIR/$OUTNAME.gpg" -e "$1"
@@ -71,9 +73,9 @@ function read_entry ()
         TIME=${TIME%.gpg}
         DATE="$(date -d "$DATE $TIME" -R)"
 
-        printf "                     \x1b[33m~~ $DATE ~~\x1b[39m\n"
+        printf "                    \x1b[33m~~ $DATE ~~\x1b[39m\n"
         if [ -n "$KEYID" ] ; then
-            gpg -d "$i" 2>/dev/null
+            gpg --no-tty -d "$i" 2>/dev/null
         else
             cat "$i"
         fi
@@ -95,8 +97,23 @@ function open_file ()
     fi
 
     xdg-open "$OUTNAME"
+    read -n1 -p "Press a touch to continue..."
     shred "$OUTNAME"
     rm -r "$TMP"
+}
+
+function extract_file ()
+{
+    NAME="$HOME/.jq/$1"
+    TMP="$(mktemp -d)"
+    OUTNAME=${NAME%.gpg}
+    OUTNAME="$2/$(basename "$OUTNAME")"
+
+    if [ -n "$KEYID" ] ; then
+        gpg -o "$OUTNAME" -d "$NAME"
+    else
+        cp "$NAME" "$OUTNAME"
+    fi
 }
 
 function init ()
@@ -108,7 +125,7 @@ function init ()
 
 if [ "$1" = "ls" ] ; then
     printf "Journal $2\n"
-    tree "$HOME/.jq/$2" --noreport -C | tail -n +2
+    tree "$HOME/.jq/$2" --noreport -C | tail -n +2 | sed 's/.gpg$//g'
 elif [ "$1" = "add" ] ; then
     test -n "$2" && add_file "$2" "$3" || add_entry
 elif [ "$1" = "init" ] ; then
@@ -117,6 +134,8 @@ elif [ "$1" = "read" ] ; then
     read_entry "$2" | less -r
 elif [ "$1" = "open" ] ; then
     open_file "$2"
+elif [ "$1" = "extract" ] ; then
+    extract_file "$2" "$3"
 else
     print_help
 fi
