@@ -1,9 +1,9 @@
-== jq: A journal manager
+##jq: A journal manager
 
 jq allows to keep a potentially encrypted journal, by using a plain and simple
 folder structure to store the entries.
 
-=== Usage
+###Usage
 
 *jq init* : set the gpg key-id for encrypting. Leave blank if you don't want the
 journal to be encrypted.
