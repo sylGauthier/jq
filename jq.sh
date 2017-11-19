@@ -43,6 +43,25 @@ function add_entry ()
     printf "Created new entry : $CURY/$CURM/$CURD/$NAME\n"
 }
 
+function add_file ()
+{
+    CURY="$(date +%Y)"
+    CURM="$(date +%m)"
+    CURD="$(date +%d)"
+    NAME="$(date +%H:%M:%S)"
+    DIR="$HOME/.jq/$CURY/$CURM/$CURD/"
+    OUTNAME="$(test -n "$2" && echo "$2" || echo "$1")"
+
+    if [ -n "$KEYID" ] ; then
+        gpg -r "$KEYID" -o "$DIR/$OUTNAME.gpg" -e "$1"
+    else
+        printf "/!\\ Unencrypted /!\\ \n"
+        cp "$1" "$DIR/$OUTNAME"
+    fi
+
+    printf "Added file : $DIR/$OUTNAME\n"
+}
+
 function read_entry ()
 {
     for i in $(find "$HOME/.jq/$1" -name *:*:* | sort) ; do
@@ -69,7 +88,7 @@ if [ "$1" = "ls" ] ; then
     printf "Journal $2\n"
     tree "$HOME/.jq/$2" --noreport -C | tail -n +2
 elif [ "$1" = "add" ] ; then
-    add_entry
+    test -n "$2" && add_file "$2" "$3" || add_entry
 elif [ "$1" = "init" ] ; then
     init
 elif [ "$1" = "read" ] ; then
