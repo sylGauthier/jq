@@ -11,7 +11,7 @@ journal to be encrypted.
 **jq add* : open the text editor in $EDITOR variable to write an entry. Then
 encrypt the file (if need be) and add it to the journal.
 
-**jq add <filename> [<name>]** : add a file to the journal. Will be encrypted if
+**jq add *filename* \[*name*\]** : add a file to the journal. Will be encrypted if
 the GPG key-id has been set. The file will have the same name (+ .gpg extension
 if encrypted) or the name given in second parameter.
   
