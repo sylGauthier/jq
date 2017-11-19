@@ -72,9 +72,31 @@ function read_entry ()
         DATE="$(date -d "$DATE $TIME" -R)"
 
         printf "                     ~~ $DATE ~~\n"
-        gpg -d "$i" 2>/dev/null
+        if [ -n "$KEYID" ] ; then
+            gpg -d "$i" 2>/dev/null
+        else
+            cat "$i"
+        fi
         printf "\n                                    ***\n\n"
     done
+}
+
+function open_file ()
+{
+    NAME="$HOME/.jq/$1"
+    TMP="$(mktemp -d)"
+    OUTNAME=${NAME%.gpg}
+    OUTNAME="$TMP/$(basename "$OUTNAME")"
+
+    if [ -n "$KEYID" ] ; then
+        gpg -o "$OUTNAME" -d "$NAME"
+    else
+        cp "$NAME" "$OUTNAME"
+    fi
+
+    xdg-open "$OUTNAME"
+    shred "$OUTNAME"
+    rm -r "$TMP"
 }
 
 function init ()
@@ -93,6 +115,8 @@ elif [ "$1" = "init" ] ; then
     init
 elif [ "$1" = "read" ] ; then
     read_entry "$2" | less
+elif [ "$1" = "open" ] ; then
+    open_file "$2"
 else
     print_help
 fi
