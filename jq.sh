@@ -71,7 +71,7 @@ function read_entry ()
         TIME=${TIME%.gpg}
         DATE="$(date -d "$DATE $TIME" -R)"
 
-        printf "                     ~~ $DATE ~~\n"
+        printf "                     \x1b[33m~~ $DATE ~~\x1b[39m\n"
         if [ -n "$KEYID" ] ; then
             gpg -d "$i" 2>/dev/null
         else
@@ -114,7 +114,7 @@ elif [ "$1" = "add" ] ; then
 elif [ "$1" = "init" ] ; then
     init
 elif [ "$1" = "read" ] ; then
-    read_entry "$2" | less
+    read_entry "$2" | less -r
 elif [ "$1" = "open" ] ; then
     open_file "$2"
 else
