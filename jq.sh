@@ -91,7 +91,7 @@ function open_file ()
     OUTNAME="$TMP/$(basename "$OUTNAME")"
 
     if [ -n "$KEYID" ] ; then
-        gpg -o "$OUTNAME" -d "$NAME"
+        gpg -o "$OUTNAME" -d "$NAME.gpg"
     else
         cp "$NAME" "$OUTNAME"
     fi
