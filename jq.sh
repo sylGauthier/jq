@@ -73,7 +73,7 @@ function read_entry ()
         TIME=${TIME%.gpg}
         DATE="$(date -d "$DATE $TIME" -R)"
 
-        printf "                    \x1b[33m~~ $DATE ~~\x1b[39m\n"
+        printf "                   \x1b[33m~~ $DATE ~~\x1b[39m\n"
         if [ -n "$KEYID" ] ; then
             gpg --no-tty -d "$i" 2>/dev/null
         else
