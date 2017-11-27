@@ -136,6 +136,28 @@ elif [ "$1" = "open" ] ; then
     open_file "$2"
 elif [ "$1" = "extract" ] ; then
     extract_file "$2" "$3"
+elif [ "$1" = "git" ] ; then
+    if [ "$2" = "init" ] ; then
+        if [ -d "$HOME/.jq/.git" ] ; then
+            printf "Git already initialized\n"
+            exit
+        else
+            cd "$HOME/.jq/"
+            git init
+            echo "*.gpg diff=gpg" > .gitattributes
+            git config diff.gpg.binary true
+            git config diff.gpg.textconv "gpg2 -d --quiet --yes --compress-algo=none --no-encrypt-to --batch --use-agent"
+            git add .gitattributes
+            git commit .gitattributes -m "Set git diff to gpg mode"
+            git add .id
+            git commit -m "Added key id file"
+            git add *
+            git commit -a -m "Added current content of journal"
+        fi
+    else
+        shift
+        git "$@"
+    fi
 else
     print_help
 fi
