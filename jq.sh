@@ -137,12 +137,12 @@ elif [ "$1" = "open" ] ; then
 elif [ "$1" = "extract" ] ; then
     extract_file "$2" "$3"
 elif [ "$1" = "git" ] ; then
+    cd "$HOME/.jq/"
     if [ "$2" = "init" ] ; then
         if [ -d "$HOME/.jq/.git" ] ; then
             printf "Git already initialized\n"
             exit
         else
-            cd "$HOME/.jq/"
             git init
             echo "*.gpg diff=gpg" > .gitattributes
             git config diff.gpg.binary true
