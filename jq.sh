@@ -41,6 +41,10 @@ function add_entry ()
 
     rm -r "$(dirname "$TMP")"
     printf "Created new entry : $CURY/$CURM/$CURD/$NAME\n"
+
+    if git status &> /dev/null ; then
+        git commit -a -m "Added new entry to git"
+    fi
 }
 
 function add_file ()
@@ -62,6 +66,10 @@ function add_file ()
     fi
 
     printf "Added file : $DIR/$OUTNAME\n"
+
+    if git status &> /dev/null ; then
+        git commit -a -m "Added new file to git"
+    fi
 }
 
 function read_entry ()
