@@ -24,17 +24,17 @@ function add_entry ()
     CURY="$(date +%Y)"
     CURM="$(date +%m)"
     CURD="$(date +%d)"
-    NAME="$(date +%H:%M:%S)"
     DIR="$HOME/.jq/$CURY/$CURM/$CURD/"
+    NAME="$(date +%H:%M:%S)"
+    FULLNAME="$DIR/$NAME"
     TMP="$(mktemp -d)/$NAME.jq"
-
-    cd "$HOME/.jq/"
 
     test -d "$DIR" || mkdir -p "$DIR"
     $ED "$TMP"
 
     if [ -n "$KEYID" ] ; then
-        gpg -r "$KEYID" -o "$DIR/$NAME.gpg" -e "$TMP" 2>/dev/null
+        FULLNAME="$FULLNAME.gpg"
+        gpg -r "$KEYID" -o "$FULLNAME" -e "$TMP" 2>/dev/null
         shred -u "$TMP"
     else
         printf "/!\\ Unencrypted /!\\ \n"
@@ -44,35 +44,42 @@ function add_entry ()
     rm -r "$(dirname "$TMP")"
     printf "Created new entry : $CURY/$CURM/$CURD/$NAME\n"
 
+    cd "$HOME/.jq/"
     if git status &> /dev/null ; then
-        git commit -a -m "Added new entry to git"
+        git add "$FULLNAME"
+        git commit -m "Added new entry to git"
     fi
 }
 
 function add_file ()
 {
-    CURY="$(date +%Y)"
-    CURM="$(date +%m)"
-    CURD="$(date +%d)"
-    NAME="$(date +%H:%M:%S)"
-    DIR="$HOME/.jq/$CURY/$CURM/$CURD/"
-    OUTNAME="$(test -n "$2" && echo "$2" || echo "$1")"
+    if [ -f "$1" ] ; then
+        CURY="$(date +%Y)"
+        CURM="$(date +%m)"
+        CURD="$(date +%d)"
+        NAME="$(date +%H:%M:%S)"
+        DIR="$HOME/.jq/$CURY/$CURM/$CURD/"
+        OUTNAME="$DIR/$(test -n "$2" && echo "$2" || echo "$1")"
 
-    cd "$HOME/.jq/"
+        test -d "$DIR" || mkdir -p "$DIR"
 
-    test -d "$DIR" || mkdir -p "$DIR"
+        if [ -n "$KEYID" ] ; then
+            OUTNAME="$OUTNAME.gpg"
+            gpg -r "$KEYID" -o "$OUTNAME" -e "$1"
+        else
+            printf "/!\\ Unencrypted /!\\ \n"
+            cp "$1" "$OUTNAME"
+        fi
 
-    if [ -n "$KEYID" ] ; then
-        gpg -r "$KEYID" -o "$DIR/$OUTNAME.gpg" -e "$1"
+        printf "Added file : $OUTNAME\n"
+
+        cd "$HOME/.jq/"
+        if git status &> /dev/null ; then
+            git add "$OUTNAME"
+            git commit -m "Added new file to git"
+        fi
     else
-        printf "/!\\ Unencrypted /!\\ \n"
-        cp "$1" "$DIR/$OUTNAME"
-    fi
-
-    printf "Added file : $DIR/$OUTNAME\n"
-
-    if git status &> /dev/null ; then
-        git commit -a -m "Added new file to git"
+        printf "Error: argument is not a valid file\n"
     fi
 }
 
@@ -139,7 +146,11 @@ if [ "$1" = "ls" ] ; then
     printf "Journal $2\n"
     tree "$HOME/.jq/$2" --noreport -C | tail -n +2 | sed 's/.gpg$//g'
 elif [ "$1" = "add" ] ; then
-    test -n "$2" && add_file "$2" "$3" || add_entry
+    if [ -n "$2" ] ; then
+        add_file "$2" "$3"
+    else
+        add_entry
+    fi
 elif [ "$1" = "init" ] ; then
     init
 elif [ "$1" = "read" ] ; then
