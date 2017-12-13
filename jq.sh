@@ -28,6 +28,8 @@ function add_entry ()
     DIR="$HOME/.jq/$CURY/$CURM/$CURD/"
     TMP="$(mktemp -d)/$NAME.jq"
 
+    cd "$HOME/.jq/"
+
     test -d "$DIR" || mkdir -p "$DIR"
     $ED "$TMP"
 
@@ -55,6 +57,8 @@ function add_file ()
     NAME="$(date +%H:%M:%S)"
     DIR="$HOME/.jq/$CURY/$CURM/$CURD/"
     OUTNAME="$(test -n "$2" && echo "$2" || echo "$1")"
+
+    cd "$HOME/.jq/"
 
     test -d "$DIR" || mkdir -p "$DIR"
 
