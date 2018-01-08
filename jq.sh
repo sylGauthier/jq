@@ -9,6 +9,7 @@ if [ ! -f "$HOME/.jq/.id" ] ; then
 fi
 
 ED="$(test -n "$EDITOR" && echo "$EDITOR" || echo "/usr/bin/vi")"
+OPENER="$(command -v rifle || command -v xdg-open || cat)"
 KEYID="$(cat "$HOME/.jq/.id")"
 
 function print_help ()
@@ -115,7 +116,7 @@ function open_file ()
         cp "$NAME" "$OUTNAME"
     fi
 
-    xdg-open "$OUTNAME"
+    $OPENER "$OUTNAME"
     read -n1 -p "Press a touch to continue..."
     shred "$OUTNAME"
     rm -r "$TMP"
