@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /bin/bash
 
 if [ ! -d "$HOME/.jq" ] ; then
     mkdir "$HOME/.jq"
