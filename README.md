@@ -20,7 +20,7 @@ given, will read all the entries in the journal. The date can be YYYY (all the
 entries at the given year), YYYY/MM (same restricted to the given month) or
 YYYY/MM/DD (all the entries at a given day).
   
-**jq open *filename** * : decrypt (if need be) and open (with xdg-open) the given
+**jq open *filename*** : decrypt (if need be) and open (with xdg-open) the given
 file. Filename will be like YYYY/MM/DD/filename\[.gpg\]. When closing the reader,
 the temporary decrypted file will be shredded and removed from disk.
   
