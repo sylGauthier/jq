@@ -9,7 +9,7 @@ if [ ! -f "$HOME/.jq/.id" ] ; then
 fi
 
 ED="$(test -n "$EDITOR" && echo "$EDITOR" || echo "/usr/bin/vi")"
-OPENER="$(command -v rifle || command -v xdg-open || cat)"
+OPENER="$(command -v rifle || command -v xdg-open || echo cat)"
 KEYID="$(cat "$HOME/.jq/.id")"
 
 function print_help ()
