@@ -33,6 +33,11 @@ function add_entry ()
     test -d "$DIR" || mkdir -p "$DIR"
     $ED "$TMP"
 
+    if [ ! -f "$TMP" ] ; then
+        printf "No entry was added\n"
+        exit 0
+    fi
+
     if [ -n "$KEYID" ] ; then
         FULLNAME="$FULLNAME.gpg"
         gpg -r "$KEYID" -o "$FULLNAME" -e "$TMP" 2>/dev/null
